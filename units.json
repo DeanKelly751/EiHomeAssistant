@@ -1,0 +1,13 @@
+{
+    "units": [{
+            "model": "Enviromental Sensors",
+            "serialNo": "111",
+            "timestamp": "18:30",
+            "location": "kitchen",
+            "CO2": "1100ppm",
+            "Temperature": "22",
+            "Humidity": "80"
+
+        }
+    ]
+}
