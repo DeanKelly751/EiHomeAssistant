@@ -2,30 +2,168 @@ import pyttsx3
 import datetime
 import speech_recognition as sr
 import json
+import pyaudio
 
-#Opening my json Database
-f = open('units.json',)
+bedR = 0
+kitch = 1
+garage = 2
+
+tempVals = [20, 21, 22]
+co2Vals = [1200, 1500, 1800]
+humVals = [60, 80, 95]
+rooms = ['bedroom', 'kitchen', 'garage']
+events = ['temperature', 'CO2', 'humidity']
+
 
 #Parse Func for my data
-def parseThis():
-    units = json.loads(f)
+def parseThis(x):
+    with open('units.json', 'r') as f:
+        home_unit = json.load(f)
 
-    for i in units['Humidity']:
-       answer = print(i)
+    for value in home_unit:
 
-    f.close()
+        answer = print(value[x])
 
     return answer
 
 
-#Creating enviroment for my assistnt
-engine = pyttsx3.init()
+#Listener...1
+listener = sr.Recognizer()
 
+#speak function to enable our assistant to talk
 def speak(audio):
     engine.say(audio)
     engine.runAndWait()
 
-speak("hello this is Electron the Ei home assistant")
+#2
+#Creating enviroment for my assistnt
+engine = pyttsx3.init()
+
+#sets voice to female
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[1].id)
+
+#dynamic talk function. pass in whatever param you want
+def talk(text):
+    engine.say(text)
+    engine.runAndWait()
+
+#1
+#take the command we speak
+def take_command():
+    try:
+        #use microphone as source
+        with sr.Microphone() as source:
+            print("Processing...")
+            #listen to your voice as the source
+            voice = listener.listen(source)
+            #pass the audio to google and google returns text
+            command = listener.recognize_google(voice)
+            command = command.lower()
+            #only prints what you say if electron is said
+
+            if 'electron' in command:
+                #this removes 'electron from the string while having it as a wake word still
+                #command = command.replace('electron', '')
+                print(command)
+               # talk(command) #will repeat back to you what you said
+    except:
+        pass
+    return command
+
+take_command()
+
+def bedroom_unit():
+    command = take_command()
+    #command = "electron what is the tempeature in the bedroom"
+    #electron must be said for this to speak
+    if 'electron' in command:
+        #bedroom must be spoken for this to activate
+        if 'kitchen' in command:
+            #if the user asks for any of theses values they will be spoken
+            if 'temperature' in command:
+                        talk(tempVals[bedR] + 'degrees')
+                        #talk('degrees')
+
+            elif 'c. o. two' in command:
+                        talk(co2Vals[bedR])
+                        talk('ppm')
+
+            elif 'humidity' in command:
+                        talk(humVals[bedR])
+                        talk('percent')
+    #message printed to suggest why it didnt work
+    else:
+        command2 = "why did you not tell me"
+       #command2 = take_command()
+        if 'why' and 'not' in command2:
+          talk("I am not telling you, because you never said my name!")
+
+bedroom_unit()
+
+
+def kitchen_unit():
+    #command = take_command()
+    command = "electron what is the tempeature in the bedroom"
+    #electron must be said for this to speak
+    if 'electron' in command:
+        #bedroom must be spoken for this to activate
+        if 'kitchen' in command:
+            #if the user asks for any of theses values they will be spoken
+            if 'temperature' in command:
+                        talk(tempVals[kitch])
+                        talk('degrees')
+
+            elif 'c. o. two' in command:
+                        talk(co2Vals[kitch])
+                        talk('ppm')
+
+            elif 'humidity' in command:
+                        talk(humVals[kitch])
+                        talk('percent')
+    #message printed to suggest why it didnt work
+    else:
+        command2 = "why did you not tell me"
+       #command2 = take_command()
+        if 'why' and 'not' in command2:
+          talk("I am not telling you, because you never said my name!")
+
+#kitchen_unit()
+
+
+def garage_unit():
+    #command = take_command()
+    command = "electron what is the tempeature in the bedroom"
+    #electron must be said for this to speak
+    if 'electron' in command:
+        #bedroom must be spoken for this to activate
+        if 'kitchen' in command:
+            #if the user asks for any of theses values they will be spoken
+            if 'temperature' in command:
+                        talk(tempVals[garage])
+                        talk('degrees')
+
+            elif 'c. o. two' in command:
+                        talk(co2Vals[garage])
+                        talk('ppm')
+
+            elif 'humidity' in command:
+                        talk(humVals[garage])
+                        talk('percent')
+    #message printed to suggest why it didnt work
+    else:
+        command2 = "why did you not tell me"
+       #command2 = take_command()
+        if 'why' and 'not' in command2:
+          talk("I am not telling you, because you never said my name!")
+
+garage_unit()
+
+#def run_alexa():
+  #  command = take_command()
+
+
+#speak("hello this is Electron the Ei home assistant")
 
 
 #Function to speak current time
@@ -33,7 +171,7 @@ def time():
     Time = datetime.datetime.now().strftime("%I:%M:%S")
     speak(Time)
 
-time()
+#time()
 
 
 #Func to speak current date
@@ -42,7 +180,7 @@ def date():
     month = int(datetime.datetime.now().month)
     day = int(datetime.datetime.now().day)
 
-date()
+#date()
 
 
 #Func to greet our user with time sensitivty
@@ -59,11 +197,11 @@ def greet_me():
 
     speak("How can I help you?")
 
-greet_me()
+#greet_me()
 
 
 #speech recognition function...
-def take_command():
+def get_command():
     r = sr.Recognizer()
     with sr.Microphone() as source:
         print("Listening...")
@@ -81,7 +219,7 @@ def take_command():
         return "Null"
     return query
 
-take_command()
+#get_command()
 
 
 # If a temperature hits a certain level speak "Your temperature has hit an unsafe level"
@@ -110,36 +248,84 @@ def from_this_day():
 
 #Gives all your house units temperatures...
 def all_temp():
+    command = take_command()
+    if 'electron' in command:
+        if 'temperature' and 'all' in command:
+            talk("In the garage, your reading is at ")
+            talk(tempVals[garage])
+            talk('degrees')
+            talk("In the kitchen, your reading is at ")
+            talk(tempVals[kitch])
+            talk('degrees')
+            talk("In the bedroom, your reading is at ")
+            talk(tempVals[bedR])
+            talk('degrees')
+    else:
+        command2 = "why did you not tell me"
+       #command2 = take_command()
+        if 'why' and 'not' in command2:
+          talk("I am not telling you, because you never said my name!")
 
-    return "your temperature readings are as follows, "
 
 
 #GIves all units humidity...
 def all_hum():
-    humidity = parseThis()
-    answer = print("your humidity readings are as follows, " + humidity + "percent")
+    command = take_command()
+    if 'electron' in command:
+        if 'humidity' and 'all' in command:
+            talk("In the garage, your reading is at ")
+            talk(humVals[garage])
+            talk('percent')
+            talk("In the kitchen, your reading is at ")
+            talk(humVals[kitch])
+            talk('percent')
+            talk("In the bedroom, your reading is at ")
+            talk(humVals[bedR])
+            talk('percent')
+    else:
+        command2 = "why did you not tell me"
+       #command2 = take_command()
+        if 'why' and 'not' in command2:
+          talk("I am not telling you, because you never said my name!")
 
-    return answer
 
 #all_hum()
 
 
-
-
 #Gives all CO2 readings...
 def all_co2():
-
-    return "your CO2 readings are as follows, "
-
-
-#Gives Hum, CO2 and Temp readings of every unit in your house..
-def all_data():
-
-    return "Your house unit readings are as follows, "
+    command = take_command()
+    if 'electron' in command:
+        if 'c. o. two' and 'all' in command:
+            talk("In the garage, your reading is at ")
+            talk(co2Vals[garage])
+            talk('ppm')
+            talk("In the kitchen, your reading is at ")
+            talk(co2Vals[kitch])
+            talk('ppm')
+            talk("In the bedroom, your reading is at ")
+            talk(co2Vals[bedR])
+            talk('ppm')
+    else:
+        command2 = "why did you not tell me"
+       #command2 = take_command()
+        if 'why' and 'not' in command2:
+          talk("I am not telling you, because you never said my name!")
 
 
 #Sets a reminder to check your sensor
 #Add on - Maybe set to play readings at certain time of the day?
 def create_reminder():
+    command = take_command()
+    if 'electron' in command:
+        if 'set' and 'reminder':
 
-    return "Your reminder has been set."
+            return "Your reminder has been set."
+
+
+#Gives Hum, CO2 and Temp readings of every unit in your house..
+#necessary????
+
+#def all_data():
+
+    #return "Your house unit readings are as follows, "
