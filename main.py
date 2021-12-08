@@ -1,9 +1,18 @@
 from func import all_co2, all_hum, create_reminder, date, time, take_command, all_temp, set_temperature, greet_me, talk, bedroom_unit, garage_unit, kitchen_unit
 from reminder import remind_me
+import schedule
 
 def main():
     date()
     time()
+
+    t = {'one a. m':'01:00','two a. m':'02:00','three a. m':'03:00','four a. m':'04:00',
+    'five a. m':'05:00','six a. m':'06:00','seven a. m':'07:00','eight a. m':'08:00',
+    'nine a. m':'09:00','ten a. m':'10:00','eleven a. m':'11:00','twelve p. m':'12:00',
+    'one p. m':'13:00','two p. m':'14:00','three p. m':'15:00','four p. m':'16:00',
+    'five p. m':'17:00','six p. m':'18:00','seven p. m':'19:00','eight p. m':'20:00',
+    'nine p. m':'21:00','ten p. m':'22:00','eleven p. m':'23:00','midnight': '00:00'}
+
 
     while True:
 
@@ -60,10 +69,12 @@ def main():
 
                         talk("No problem.What time would you like to set it for?")
 
-                        timeCmd = take_command()
-                        timing = int(timeCmd)
+                        command4 = take_command()
 
-                        remind_me(timing)
+                        setTime = t[command4]
+                        talk("Your reminder has been set. Thank you")
+
+                        job = schedule.every().day.at(setTime).do(remind_me)
 
                     else:
                         talk("Invalid command")
