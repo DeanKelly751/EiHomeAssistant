@@ -1,5 +1,6 @@
-from func import all_co2, all_hum, create_reminder, date, time, take_command, all_temp, set_temperature, greet_me, talk, bedroom_unit, garage_unit, kitchen_unit
+from func import all_co2, all_hum, date, time, take_command, all_temp, set_temperature, greet_me, talk, bedroom_unit, garage_unit, kitchen_unit
 from reminder import remind_me
+from training import product_chat
 import schedule
 
 def main():
@@ -24,7 +25,7 @@ def main():
             greet_me()
 
             #command2 = take_command()
-            command2 = "electron"
+            command2 = "exit"
 
             if 'electron' in command2:
 
@@ -76,14 +77,21 @@ def main():
 
                         job = schedule.every().day.at(setTime).do(remind_me)
 
+                    elif "information" and "products" in command3:
+                        product_chat()
+
                     else:
                         talk("Invalid command")
                     talk("Is there anything else you need?")
 
             else:
-                command2 = take_command()
+                command2 = "exit"
                 if 'why' and 'not' in command2:
                     talk("I am not talking to you, because you never said my name!")
 
+                elif 'exit' in command2:
+                    break
 
 main()
+
+
